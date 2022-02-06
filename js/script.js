@@ -1,6 +1,7 @@
 const map = {
     fetchFlats: async () => {
-        return await fetch('./.gitignore/appartaments.txt')
+        //remove data placeholder file from .gitignore folder
+        return await fetch('./data/apartments.txt')
             .then(response => {
                 if (response.status === 200 && response.ok) {
                     return response.json()
@@ -91,3 +92,5 @@ function initMap() {
 
     new markerClusterer.MarkerClusterer({ map, markers });
 }
+
+console.log('loh')

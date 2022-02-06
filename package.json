@@ -1,5 +1,10 @@
 {
+  "scripts": {
+    "watch-scss": "sass --watch scss/style.scss css/style.css",
+    "live-server" : "live-server"
+  },
   "dependencies": {
-    "@googlemaps/markerclusterer": "^1.0.22"
+    "@googlemaps/markerclusterer": "^1.0.22",
+    "live-server": "^1.2.1"
   }
 }

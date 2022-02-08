@@ -44,5 +44,34 @@ body {
     right: 40px;
     margin-left: 20px; }
 
-.info-window {
+.modal.show {
   display: none; }
+
+.add-btn {
+  display: block;
+  position: absolute;
+  top: 60px;
+  left: 10px;
+  min-width: 180px;
+  min-height: 30px;
+  font-size: 20px;
+  padding: 10px 20px;
+  background: green;
+  border: 1px solid green;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer; }
+
+.window {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2000; }
+
+.window-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center; }

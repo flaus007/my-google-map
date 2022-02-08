@@ -72,11 +72,12 @@ function initMap() {
             label,
         });
 
-        marker.addListener("mouseover", (e) => {
+        //можеш не оголошувати параметр в колбекові, якщо ти його не використовуєш
+        marker.addListener("mouseover", () => {
             infoWindow.setContent(elem.flatOptions.street);
             infoWindow.open(map, marker);
         });
-        marker.addListener('mouseout', (e) => {
+        marker.addListener('mouseout', () => {
             infoWindow.close();
         })
 
@@ -92,5 +93,3 @@ function initMap() {
 
     new markerClusterer.MarkerClusterer({ map, markers });
 }
-
-console.log('loh')

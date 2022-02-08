@@ -1,32 +1,30 @@
-const map = {
-    fetchFlats: async () => {
-        //remove data placeholder file from .gitignore folder
-        return await fetch('./data/apartments.txt')
-            .then(response => {
-                if (response.status === 200 && response.ok) {
-                    return response.json()
-                } else {
-                    return new Error(response.statusText)
-                }
-            })
-    },
+const fetchFlats = async () => {
+    //remove data placeholder file from .gitignore folder
+    return await fetch('./data/apartments.txt')
+      .then(response => {
+          if(response.status === 200 && response.ok) {
+              return response.json()
+          } else {
+              return new Error(response.statusText)
+          }
+      })
+}
 
-    markerksForInitMap: () => {
-        const arrayMarkers = [];
-        const maps = map.fetchFlats();
-        maps.then(item => {
-            item.map(e => {
-                const { lat, lng, ...other } = e;
-                let obj = {
-                    lat: lat,
-                    lng: lng,
-                    flatOptions: other,
-                }
-                arrayMarkers.push(obj);
-            })
+const markerksForInitMap = () => {
+    const arrayMarkers = [];
+    const maps = map.fetchFlats();
+    maps.then(item => {
+        item.map(e => {
+            const {lat, lng, ...other} = e;
+            let obj = {
+                lat: lat,
+                lng: lng,
+                flatOptions: other,
+            }
+            arrayMarkers.push(obj);
         })
-        return arrayMarkers;
-    },
+    })
+    return arrayMarkers;
 }
 
 const renderModalInfo = (flat) => {
@@ -49,47 +47,69 @@ const renderModalInfo = (flat) => {
     return div;
 }
 
-const flats = map.markerksForInitMap();
-
 function initMap() {
-    const map = new google.maps.Map(document.getElementById("map"), {
+
+    const mapArg = {
         zoom: 12,
-        center: { lat: 49.594085, lng: 34.543770 },
-    });
+        center: {lat: 49.594085, lng: 34.543770},
+    };
+
+    const mapContainer = document.getElementById('map');
+
+    const map = new google.maps.Map(mapContainer, mapArg);
+
     const infoWindow = new google.maps.InfoWindow({
         content: "",
         disableAutoPan: true,
     });
     const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    map.markers = []
+
     const markers = flats.map((elem, i) => {
-        let position = {
-            lat: Number(elem.lat),
-            lng: Number(elem.lng),
-        }
-        const label = labels[i % labels.length];
-        const marker = new google.maps.Marker({
-            position,
-            label,
-        });
 
-        //можеш не оголошувати параметр в колбекові, якщо ти його не використовуєш
-        marker.addListener("mouseover", () => {
-            infoWindow.setContent(elem.flatOptions.street);
-            infoWindow.open(map, marker);
-        });
-        marker.addListener('mouseout', () => {
-            infoWindow.close();
-        })
+        return initMapMarkers(elem, map)
 
-        marker.addListener('click', () => {
-            const window = document.querySelector('.window');
-            const res = renderModalInfo;
-            window.setContent(res(elem));
-            window.open(map, marker);
-        })
-
-        return marker;
     });
 
-    new markerClusterer.MarkerClusterer({ map, markers });
+    new markerClusterer.MarkerClusterer({map, markers});
 }
+
+function initMapMarkers(markerData, map) {
+    const position = {
+        lat: Number(markerData.lat),
+        lng: Number(markerData.lng),
+    }
+
+    // Create marker instance.
+    const marker = new google.maps.Marker({
+        position,
+        map
+    });
+
+    return marker;
+}
+
+function centerMap(map) {
+
+    // Create map boundaries from all map markers.
+    var bounds = new google.maps.LatLngBounds();
+    map.markers.forEach(function (marker) {
+        bounds.extend({
+            lat: marker.position.lat(),
+            lng: marker.position.lng()
+        });
+    });
+
+    // Case: Single marker.
+    if(map.markers.length == 1) {
+        map.setCenter(bounds.getCenter());
+
+        // Case: Multiple markers.
+    } else {
+        map.fitBounds(bounds);
+    }
+}
+
+
+

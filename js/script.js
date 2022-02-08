@@ -1,6 +1,6 @@
-const map = {
+const myMap = {
     fetchFlats: async () => {
-        return await fetch('./.gitignore/appartaments.txt')
+        return await fetch('./appartaments.txt')
             .then(response => {
                 if (response.status === 200 && response.ok) {
                     return response.json()
@@ -12,7 +12,7 @@ const map = {
 
     markerksForInitMap: () => {
         const arrayMarkers = [];
-        const maps = map.fetchFlats();
+        const maps = myMap.fetchFlats();
         maps.then(item => {
             item.map(e => {
                 const { lat, lng, ...other } = e;
@@ -29,6 +29,8 @@ const map = {
 
     filterArrayMarkers: [],
 }
+
+const flats = myMap.markerksForInitMap();
 
 const renderModalInfo = (flat) => {
     const div = document.querySelector('#map');
@@ -49,8 +51,6 @@ const renderModalInfo = (flat) => {
     div.innerHTML += contentString;
     return div;
 }
-
-const flats = map.markerksForInitMap();
 
 function initMap() {
     const map = new google.maps.Map(document.getElementById("map"), {

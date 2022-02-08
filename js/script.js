@@ -26,6 +26,8 @@ const map = {
         })
         return arrayMarkers;
     },
+
+    filterArrayMarkers: [],
 }
 
 const renderModalInfo = (flat) => {

@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
     <title>Marker Clustering</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="./dist/style.css"/>
 </head>
 <body>
-    <div class="wrapper">
-        <div id="map"></div>
-        <div class="info-window"></div>
-    </div>
-    <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
-    <script src="js/script.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvkiEyeEnaYkKNo4-7Z7INOKLEbaG-Brg&callback=initMap&v=weekly" async></script>
+<div id="map" class="window"></div>
+<!--
+скріпти варто підключати у футері, а не в хеді, для оптимізація швидкості рендеру html сторінки
+
+атрибути sync defer оптимізують швидкість завантаження скриптів шляхом асинхронної їх загрузки, та зберігають порядок їх виконання
+
+-->
+<script async defer src="./dist/main.js"></script>
 </body>
 </html>

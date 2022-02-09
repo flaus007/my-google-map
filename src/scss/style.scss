@@ -1,16 +1,12 @@
 #map {
     height: 100%;
 }
-  
+
 html,
 body {
     height: 100%;
     margin: 0;
     padding: 0;
-}
-.wrapper{
-    display: block;
-    height: 100%;
 }
 .modal{
     display: flex;
@@ -49,7 +45,4 @@ body {
         right: 40px;
         margin-left: 20px;
     }
-}
-.info-window{
-    display: none;
 }

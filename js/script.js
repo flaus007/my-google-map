@@ -1,3 +1,9 @@
+const querySelectItems = {
+    btnShow: document.querySelector('.filter-btn'),
+    renderBlock: document.querySelector('.info-window'),
+    updateBlock: document.querySelector('.filter'),
+}
+
 const fetchFlats = async () => {
     return await fetch('./appartaments.txt')
         .then(response => {
@@ -10,73 +16,55 @@ const fetchFlats = async () => {
 }
 // функция фетча данных с сервера
 
-const markerksForInitMap = () => {
-    const arrayMarkers = [];
-    const maps = fetchFlats();
-    maps.then(item => {
-        item.map(e => {
-            const { lat, lng, ...other } = e;
-            let obj = {
-                lat: lat,
-                lng: lng,
-                flatOptions: other,
-            }
-            arrayMarkers.push(obj);
+const markersForInitMap = () => {
+    const newArray = [];
+    const fetch = fetchFlats();
+    fetch.then(flats => {
+        flats.map(flat => {
+            newArray.push(flat);
         })
     })
-    return arrayMarkers;
+    return newArray;
 }
-// функция перезаписывания данных с фетча, в пустой новый массив
+
+const obj = [
+    { "city": "Poltava", "street": "ул. Соборности, 44", "lat": "49.592189", "lng": "34.546222", "rooms": "3", "date": "15.06.2020", "price": "30000", "status": "new", "zoom": "15" },
+    { "city": "Poltava", "street": "Лидовая ул., 12/9", "lat": "49.589891", "lng": "34.542944", "rooms": "2", "date": "15.06.2002", "price": "35000", "status": "new", "zoom": "15" },
+    { "city": "Poltava", "street": "ул. Дмытра Коряка, 2А", "lat": "49.590811", "lng": "34.543470", "rooms": "3", "date": "15.06.2003", "price": "30000", "status": "new", "zoom": "15" },
+    { "city": "Poltava", "street": "ул. Соборности, 46", "lat": "49.593570", "lng": "34.543126", "rooms": "3", "date": "15.06.2019", "price": "25000", "status": "new", "zoom": "15" },
+    { "city": "Poltava", "street": "ул. Соборности, 46", "lat": "49.594085", "lng": "34.543770", "rooms": "3", "date": "15.06.2014", "price": "23000", "status": "new", "zoom": "15" },
+    { "city": "Poltava", "street": "ул. Курчатова, 8/9", "lat": "49.581698", "lng": "34.485020", "rooms": "3", "date": "15.06.2009", "price": "60000", "status": "new", "zoom": "15" },
+]
 
 // Обьект двух массивов стандартного и пустой, который будет дальше заполняться
 const flatsArrayObj = {
-    flats: markerksForInitMap(),
-    filterAFlats: [],
+    flats: markersForInitMap(),
+    newFlats: [],
 }
 
-// создание новой структуры для вызывающевося окна
-const renderModalInfo = (flat) => {
-    const div = document.querySelector('.info-window');
-    const contentString = `
-    <div class="modal">
-        <div class="modal__box">
-            <h2 class="modal__info">Детальна інформація</h2>
-            <h3 class="modal__street">Вулиця - ${flat.flatOptions.street}</h3>
-            <h3 class="modal__price">Ціна - ${flat.flatOptions.price}$</h3>
-            <h3 class="modal__rooms">Кількість кімнат - ${flat.flatOptions.rooms}</h3>
-            <h3 class="modal__status">Статус квартири - ${flat.flatOptions.status}</h3>
-            <p class="modal__text">Ми маємо найкращі пропозиції для вас!</p>
-            <button class="modal__btn-ok">Купити</button>
-            <button class="modal__btn-close">Закрити</button
-        </div>
-    </div>
-    `;
-    div.innerHTML += contentString;
-    return div;
+const filtersArray = {
+    filterPrice: (dubl, value) => {
+        const arr = [];
+        dubl.filter(item => {
+            if (item.price <= value) {
+                arr.push(item);
+            }
+        })
+        return arr;
+    },
+
+    filterRooms: (dubl, value) => {
+        const arr = [];
+        dubl.filter(item => {
+            if (item.rooms === value) {
+                arr.push(item);
+            }
+        })
+        return arr;
+    }
 }
 
-// функция для создания маркеров
-const initMarker = async (map) => {
-    const markerFlats = flatsArrayObj.flats;
-    const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const markers = markerFlats.map((elem, i) => {
-        let position = {
-            lat: Number(elem.lat),
-            lng: Number(elem.lng),
-        }
-        const label = labels[i % labels.length];
-        const marker = new google.maps.Marker({
-            position,
-            label,
-        });
-
-        overAndOut(marker, elem);
-        clickModal(marker, elem);
-        return marker;
-    });
-    new markerClusterer.MarkerClusterer({ map, markers });
-}
-
+// гугловская функция создания инфоомационного окна
 const createInfoWindow = (str = "") => {
     return infoWindow = new google.maps.InfoWindow({
         content: str,
@@ -84,11 +72,12 @@ const createInfoWindow = (str = "") => {
     });
 }
 
+// функция с работой всплывающегося окна
 const overAndOut = (marker, elem) => {
     createInfoWindow();
 
     marker.addListener("mouseover", (e) => {
-        infoWindow.setContent(elem.flatOptions.street);
+        infoWindow.setContent(elem.street);
         infoWindow.open(map, marker);
     });
 
@@ -99,12 +88,13 @@ const overAndOut = (marker, elem) => {
     return marker;
 }
 
+// обьект по роботе с модальным окном маркера
 const modalObject = {
-    closeModal: () => {
+    closeModal: (e, marker) => {
         const btnClose = document.querySelector('.modal__btn-close');
         const modal = document.querySelector('.modal');
         const parent = document.querySelector('.info-window');
-        return btnClose.addEventListener('click', () => {
+        btnClose.addEventListener('click', (e) => {
             parent.removeChild(modal);
         })
     },
@@ -115,10 +105,10 @@ const modalObject = {
         <div class="modal">
             <div class="modal__box">
                 <h2 class="modal__info">Детальна інформація</h2>
-                <h3 class="modal__street">Вулиця - ${flat.flatOptions.street}</h3>
-                <h3 class="modal__price">Ціна - ${flat.flatOptions.price}$</h3>
-                <h3 class="modal__rooms">Кількість кімнат - ${flat.flatOptions.rooms}</h3>
-                <h3 class="modal__status">Статус квартири - ${flat.flatOptions.status}</h3>
+                <h3 class="modal__street">Вулиця - ${flat.street}</h3>
+                <h3 class="modal__price">Ціна - ${flat.price}$</h3>
+                <h3 class="modal__rooms">Кількість кімнат - ${flat.rooms}</h3>
+                <h3 class="modal__status">Статус квартири - ${flat.status}</h3>
                 <p class="modal__text">Ми маємо найкращі пропозиції для вас!</p>
                 <button class="modal__btn-ok">Купити</button>
                 <button class="modal__btn-close">Закрити</button
@@ -138,10 +128,43 @@ const modalObject = {
 }
 
 const clickModal = (marker, elem) => {
-    return marker.addListener('click', () => {
+    return marker.addListener('click', (e) => {
         modalObject.renderModalInfo(elem);
         modalObject.closeModal();
         modalObject.clickBuy();
+    })
+}
+
+
+querySelectItems.btnShow.addEventListener('click', () => {
+    const block = document.querySelector('.filter');
+    if (block.classList.contains('hide')) {
+        block.classList.remove('hide')
+    } else {
+        block.classList.add('hide');
+    }
+})
+
+const initMarker = (elem, map) => {
+    const position = {
+        lat: Number(elem.lat),
+        lng: Number(elem.lng),
+    }
+
+    const marker = new google.maps.Marker({
+        position,
+        map
+    });
+
+    overAndOut(marker, elem);
+    clickModal(marker, elem);
+
+    return marker;
+}
+
+const finalStep = (arr, map) => {
+    return arr.map(elem => {
+        return initMarker(elem, map);
     })
 }
 
@@ -150,29 +173,51 @@ function initMap() {
         zoom: 12,
         center: { lat: 49.594085, lng: 34.543770 },
     });
-    setTimeout(() => {
-        initMarker(map);
-    }, 200)
-}
 
-const addPostObj = {
-    addBtn: document.querySelector('.btn-wrap'),
-    render: () => {
-        const divStr = `
-        <div class="window">
-            <div class="window-overlay">
-                <h2 class="window__text">Введите данные для продажи квартиры:</h2>
-                <input type="text" class="window__city">
-                <input type="text" class="window__street">
-                <input type="number" class="window__rooms">
-                <input type="number" class="window__price">
-                <input type="number" class="window__data">
-                <input type="text" class="window__status">
-                <button class="window__btn-sell">Выставить обьявление</button>
-                <button class="window__btn-cancel">Отмена</button>
-            </div>
-        </div>
-        `
-        return addPostObj.addBtn.innerHTML += divStr;
-    }
+    setTimeout(() => {
+        const markers = finalStep(flatsArrayObj.flats, map);
+        let cluster;
+        cluster = new markerClusterer.MarkerClusterer({ map, markers });
+
+        querySelectItems.updateBlock.addEventListener('click', (e) => {
+            cluster.setMap(null);
+
+            const target = e.target;
+            const price = document.querySelector('.input-price');
+            const rooms = document.querySelector('.rooms');
+            const allr = rooms.querySelectorAll('.filter-il');
+            let value = target.value;
+            let clc = flatsArrayObj.flats;
+
+            if (target.classList.contains('btn-post')) {
+                const markers = finalStep(flatsArrayObj.flats, map);
+                cluster = new markerClusterer.MarkerClusterer({ map, markers });
+                price.classList.remove('active');
+                rooms.classList.remove('active');
+            }
+            if (target.classList.contains('filter__price')) {
+                price.classList.add('active');
+                flatsArrayObj.newFlats = filtersArray.filterPrice(clc, value);
+                clc = flatsArrayObj.newFlats;
+                if(rooms.classList.contains('active')){
+                    allr.forEach(item => {
+                        if(item.type === 'radio' && item.checked){
+                            flatsArrayObj.newFlats = filtersArray.filterRooms(clc, item.value);
+                        }
+                    })
+                }
+                const markers = finalStep(flatsArrayObj.newFlats, map);
+                cluster = new markerClusterer.MarkerClusterer({ map, markers });
+            }
+            if (target.classList.contains('filter-il')) {
+                rooms.classList.add('active');
+                if (price.classList.contains('active') && rooms.classList.contains('active')) {
+                    clc = filtersArray.filterPrice(flatsArrayObj.flats, price.value);
+                }
+                flatsArrayObj.newFlats = filtersArray.filterRooms(clc, value);
+                const markers = finalStep(flatsArrayObj.newFlats, map);
+                cluster = new markerClusterer.MarkerClusterer({ map, markers });
+            }
+        })
+    }, 500)
 }

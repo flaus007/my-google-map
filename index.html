@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Marker Clustering</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
+
 <body>
     <div class="wrapper">
         <div id="map"></div>
@@ -12,10 +14,39 @@
         <div class="btn-wrap">
             <button class="add-btn">Отправить запрос</button>
         </div>
+        <button class="filter-btn">Открыть фильтры</button>
+        <div class="filter hide">
+
+            <h2 class="filter__title">Выберите нужные данные:</h2>
+
+            <div class="filter__block price">
+                <label class="filter__label label-price">Укажите цену:</label>
+                <input type="range" class="filter__price input-price" min="17000" max="63000" step="100">
+                <span class="filter__value min-price">17000$</span>
+                <span class="filter__value max-price">63000$</span>
+            </div>
+
+            <div class="filter__block rooms">
+                <label class="filter__label label-rooms">Количество комнат:</label>
+
+                <input type="radio" id="rooms2" name="value-rooms" value="2" class="filter-il">
+                <label for="rooms2" class="filter__blabel label-two">2</label>
+
+                <input type="radio" id="rooms3" name="value-rooms" value="3" class="filter-il">
+                <label for="rooms3" class="filter__blabel label-three">3</label>
+
+                <input type="radio" id="rooms4" name="value-rooms" value="4" class="filter-il">
+                <label for="rooms4" class="filter__blabel label-four">4</label>
+            </div>
+
+            <button class="btn-post">Отправить</button>
+        </div>
+
     </div>
 
     <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
     <script src="js/script.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvkiEyeEnaYkKNo4-7Z7INOKLEbaG-Brg&callback=initMap&v=weekly" async></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvkiEyeEnaYkKNo4-7Z7INOKLEbaG-Brg&callback=initMap" async></script>
 </body>
+
 </html>
